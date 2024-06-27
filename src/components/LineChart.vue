@@ -113,15 +113,14 @@ export default {
     },
     async fetchData() {
       const token = localStorage.getItem('token');
-      console.log('Testing with token:', token);
+      //console.log('Testing with token:', token);
       try {
-        console.log('Sending API request...');
         const response = await axiosInstance.get('/admins/dateDistribution', {
           headers: { token: `${token}` }
         });
-        console.log('Server response:', response);
+        //console.log('Server response:', response);
         if (response.data.success) {
-          console.log('Success', response.data.data);
+         // console.log('Success', response.data.data);
           this.updateChart(response.data.data);
         } else {
             ElMessage.error('Failed to retrieve data: ' + response.data.errorMsg);
