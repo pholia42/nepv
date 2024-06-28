@@ -15,8 +15,8 @@ export default {
     return {
       provinceCoverageChart: null,
       cityCoverageChart: null,
-      provinceCoverage: 0,
-      cityCoverage: 0
+      provinceCoverage: null, // 示例数据，可以在 fetchCoverageData() 中更新
+      cityCoverage: null // 示例数据，可以在 fetchCoverageData() 中更新
     };
   },
   methods: {
@@ -28,7 +28,8 @@ export default {
           left: 'center',
           top: 20,
           textStyle: {
-            fontSize: 16
+            fontSize: 16,
+            color: '#000000'
           }
         },
         series: [
@@ -36,17 +37,36 @@ export default {
             type: 'gauge',
             detail: {
               formatter: '{value}%',
-              fontSize: 20
+              fontSize: 20,
+              color: '#67e0e3'
             },
             data: [{ value: this.provinceCoverage, name: '覆盖率' }],
             axisLine: {
               lineStyle: {
                 width: 30,
                 color: [
-                  [0.3, '#67e0e3'],
-                  [0.7, '#37a2da'],
-                  [1, '#fd666d']
+                  [0.5, '#91c7ae'],
+                  [1, '#63869e']
                 ]
+              }
+            },
+            pointer: {
+              width: 5
+            },
+            splitLine: {
+              length: 30,
+              lineStyle: {
+                width: 2,
+                color: '#000000'
+              }
+            },
+            axisLabel: {
+              color: '#000000'
+            },
+            axisTick: {
+              length: 15,
+              lineStyle: {
+                color: '#000000'
               }
             }
           }
@@ -61,7 +81,8 @@ export default {
           left: 'center',
           top: 20,
           textStyle: {
-            fontSize: 16
+            fontSize: 16,
+            color: '#000000'
           }
         },
         series: [
@@ -69,17 +90,37 @@ export default {
             type: 'gauge',
             detail: {
               formatter: '{value}%',
-              fontSize: 20
+              fontSize: 20,
+              color: '#fd666d'
             },
             data: [{ value: this.cityCoverage, name: '覆盖率' }],
             axisLine: {
               lineStyle: {
                 width: 30,
                 color: [
-                  [0.3, '#67e0e3'],
-                  [0.7, '#37a2da'],
-                  [1, '#fd666d']
+                  [0.3, '#fd666d'],
+                  [0.7, '#fd9466'],
+                  [1, '#67e0e3']
                 ]
+              }
+            },
+            pointer: {
+              width: 5
+            },
+            splitLine: {
+              length: 30,
+              lineStyle: {
+                width: 2,
+                color: '#ffaaff'
+              }
+            },
+            axisLabel: {
+              color: '#ffaaff'
+            },
+            axisTick: {
+              length: 15,
+              lineStyle: {
+                color: '#ffaaff'
               }
             }
           }
@@ -98,29 +139,26 @@ export default {
         });
       }
     },
-    fetchCoverageData() {
-      axiosInstance.get('/admins/dataGroupByProvince')
-        .then(response => {
-          if (response.data.success) {
-            const data = response.data.data;
-            const totalProvinces = data.length;
-            const provinceCoverageCount = data.filter(item => item.aqiover > 0).length;
-            const cityCoverageCount = data.filter(item => item.aqiover > 0 && this.isCity(item.province)).length;
-            
-            this.provinceCoverage = (provinceCoverageCount / totalProvinces) * 100;
-            this.cityCoverage = (cityCoverageCount / totalProvinces) * 100;
-            this.updateGauges();
-          } else {
-            console.error('Error fetching data:', response.data.errorMsg);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
+    async fetchCoverageData() {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await axiosInstance.get('/admins/otherData', {
+          headers: { token: `${token}` }
         });
+        if (response.data.success) {
+          this.updateChart(response.data.data);
+        } else {
+          this.$message.error('Failed to retrieve data: ' + response.data.errorMsg);
+        }
+      } catch (error) {
+        console.error('Request error:', error);
+        this.$message.error('Request error, please try again later');
+      }
     },
-    isCity(province) {
-      const cities = ['北京', '上海', '广州', '深圳', '天津', '重庆'];
-      return cities.includes(province);
+    updateChart(data) {
+      this.provinceCoverage = parseFloat(data.centerCityCoverage);
+      this.cityCoverage = parseFloat(data.bigCityCoverage);
+      this.updateGauges();
     }
   },
   mounted() {
@@ -136,5 +174,10 @@ export default {
   display: flex;
   justify-content: space-around;
   align-items: center;
+  width: 100%;
+}
+.gauges-container > div {
+  width: 20vw;
+  height: 20vh;
 }
 </style>

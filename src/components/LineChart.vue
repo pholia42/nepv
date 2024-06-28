@@ -141,7 +141,7 @@ export default {
 
 <style scoped>
 .line-chart {
-  width: 33.33vw; /* 屏幕宽度的1/3 */
-  height: 33.33vh; /* 屏幕高度的1/3 */
+  width: 20vw; /* 屏幕宽度的1/3 */
+  height: 20vh; /* 屏幕高度的1/3 */
 }
 </style>
