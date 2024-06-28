@@ -1,32 +1,51 @@
 <template>
   <div class="card">
-	<div class="clock-container">
+    <div class="clock-container">
       <Clock />
     </div>
-    <h2 class="chart-title">全国空气质量分析</h2>
-    <LineChart />
-	<PieChart />
+    <div class="chart-title" style="grid-area: title;">全国空气质量分析</div>
+    <div class="coverage-chart"><CoverageChart /></div>
+    <div class="pie-chart"><PieChart /></div>
+    <div class="line-chart"><LineChart /></div>
+    <div class="pollutant-chart"><PollutantChart /></div>
+    <div class="air-quality-stats"><AirQualityStats /></div>
+	<div class="map"><Map /></div>
   </div>
 </template>
 
 <script>
+import Clock from '@/components/Clock.vue';  
+import CoverageChart from '@/components/CoverageGauges.vue';
 import LineChart from '@/components/LineChart.vue';
 import PieChart from '@/components/PieChart.vue';
-import Clock from '@/components/Clock.vue';
-
+import PollutantChart from '@/components/PollutantChart.vue';
+import AirQualityStats from '@/components/AirQualityStats.vue';
+import Map from '@/components/Map.vue';
 
 export default {
   name: 'AirQualityChart',
   components: {
+    Clock,
+    CoverageChart,
     LineChart,
-	PieChart,
-	Clock
+    PieChart,
+    PollutantChart,
+    AirQualityStats,
+	Map
   }
 }
 </script>
 
 <style scoped>
 .card {
+  display: grid;
+  grid-template-areas:
+    "title title title clock"
+    "coverage map map pollutant"
+    "pie map map pollutant"
+    "line stats stats pollutant";
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto auto auto;
   position: relative;
   background-color: #fff;
   border-radius: 8px;
@@ -35,14 +54,16 @@ export default {
   margin: 20px;
 }
 
+.coverage-chart { grid-area: coverage; }
+.pie-chart { grid-area: pie; }
+.line-chart { grid-area: line; }
+.pollutant-chart { grid-area: pollutant; }
+.air-quality-stats { grid-area: stats; }
+.clock-container { grid-area: clock; }
+.map { grid-area: map; }
+
 .chart-title {
   text-align: center;
   margin-bottom: 20px;
-}
-
-.clock-container {
-  position: absolute; /* 使用绝对定位 */
-  top: 20px; /* 根据需要调整 */
-  right: 20px; /* 根据需要调整 */
 }
 </style>
