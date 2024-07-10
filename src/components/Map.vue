@@ -5,7 +5,8 @@
 <script>
 import * as echarts from 'echarts';
 import axiosInstance from '@/axios';
-import chinaMapData from '@/assets/china.json'; // Ensure the path is correct
+import chinaMapData from '@/assets/china.json';
+import { debounce } from 'lodash';
 
 export default {
   name: 'ChinaMap',
@@ -60,22 +61,25 @@ export default {
     },
     async fetchMapData() {
       const token = localStorage.getItem('token');
+	  this.mapChart.showLoading();// 显示加载动画
       try {
         const response = await axiosInstance.get('/admins/dataGroupByProvince', {
           headers: { token: `${token}` },
         });
+		this.mapChart.hideLoading(); // 隐藏加载动画
         if (response.data.success) {
           const mapData = response.data.data.map(item => ({
             name: item.province,
-            value: item.aqiover, // Assuming aqiover is the air quality index
+            value: item.aqiover,
           }));
           this.updateMap(mapData);
         } else {
           this.$message.error('Failed to retrieve data: ' + response.data.errorMsg);
         }
       } catch (error) {
+		this.mapChart.hideLoading(); // 隐藏加载动画
         console.error('Request error:', error);
-        this.$message.error('Request error, please try again later');
+        //this.$message.error('Request error, please try again later');
       }
     },
     updateMap(data) {
@@ -98,6 +102,6 @@ export default {
 <style scoped>
 .map-container {
   width: 100%;
-  height: 500px; /* Adjust height as needed */
+  height: 500px; 
 }
 </style>

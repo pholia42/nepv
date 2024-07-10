@@ -1,17 +1,17 @@
 <template>
-  <div class="stats-container">
+  <div class="stats-container" v-if="dataLoaded" v-loading="isLoading">
     <div class="stat-item">
-      <i class="icon user-icon"></i>
+      <el-icon class="icon"><user /></el-icon>
       <div class="stat-value">{{ totalTests }}</div>
       <div class="stat-label">空气质量检测总数量</div>
     </div>
     <div class="stat-item">
-      <i class="icon good-icon"></i>
+      <el-icon class="icon"><sunny /></el-icon>
       <div class="stat-value">{{ goodTests }}</div>
       <div class="stat-label">空气质量良好数量</div>
     </div>
     <div class="stat-item">
-      <i class="icon bad-icon"></i>
+      <el-icon class="icon"><drizzling /></el-icon>
       <div class="stat-value">{{ badTests }}</div>
       <div class="stat-label">空气质量异常数量</div>
     </div>
@@ -20,18 +20,31 @@
 
 <script>
 import axiosInstance from '@/axios';
+import { User, Sunny, Drizzling } from '@element-plus/icons-vue';
+import { ElLoading } from 'element-plus';
 
 export default {
   name: 'AirQualityStats',
+  components: {
+    User,
+    Sunny,
+    Drizzling
+  },
+  directives: {
+    loading: ElLoading.directive
+  },
   data() {
     return {
       totalTests: 0,
       goodTests: 0,
-      badTests: 0
+      badTests: 0,
+      isLoading: false,
+      dataLoaded: false
     };
   },
   methods: {
     async fetchStats() {
+      this.isLoading = true;
       const token = localStorage.getItem('token');
       try {
         const response = await axiosInstance.get('/admins/otherData', {
@@ -41,12 +54,15 @@ export default {
           this.totalTests = response.data.data.total;
           this.goodTests = response.data.data.goodNum;
           this.badTests = this.totalTests - this.goodTests;
+          this.dataLoaded = true;
         } else {
           this.$message.error('Failed to retrieve data: ' + response.data.errorMsg);
         }
       } catch (error) {
         console.error('Request error:', error);
         this.$message.error('Request error, please try again later');
+      } finally {
+        this.isLoading = false;
       }
     }
   },
@@ -55,6 +71,7 @@ export default {
   }
 }
 </script>
+
 
 <style scoped>
 .stats-container {
@@ -73,18 +90,6 @@ export default {
 .icon {
   font-size: 40px;
   margin-bottom: 10px;
-}
-.user-icon::before {
-  content: "\f007"; /* 使用 FontAwesome 图标 */
-  color: #1e90ff;
-}
-.good-icon::before {
-  content: "\f06b"; /* 使用 FontAwesome 图标 */
-  color: #1e90ff;
-}
-.bad-icon::before {
-  content: "\f21e"; /* 使用 FontAwesome 图标 */
-  color: #1e90ff;
 }
 .stat-value {
   font-size: 24px;

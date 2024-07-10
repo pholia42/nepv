@@ -123,7 +123,7 @@ export default {
         }
       } catch (error) {
         console.error('Request error:', error);
-        ElMessage.error('Request error, please try again later');
+        //ElMessage.error('Request error, please try again later');
       }
     }
   },

@@ -113,7 +113,7 @@ export default {
     },
     async fetchData() {
       const token = localStorage.getItem('token');
-      //console.log('Testing with token:', token);
+      console.log('Testing with token:', token);
       try {
         const response = await axiosInstance.get('/admins/dateDistribution', {
           headers: { token: `${token}` }
@@ -127,7 +127,7 @@ export default {
         }
       } catch (error) {
             console.error('Request error:', error);
-            ElMessage.error('Request error, please try again later');
+            //ElMessage.error('Request error, please try again later');
       }
     }
   },

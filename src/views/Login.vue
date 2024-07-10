@@ -49,6 +49,12 @@ const rules = reactive({
 const loginForm = ref(null); 
 
 const onSubmit = async () => {
+  // 检查手机号和密码是否为空
+  if (!form.adminsCode.trim() || !form.password.trim()) {
+    ElMessage.error('手机号或密码不能为空');
+    return;
+  }
+	
   const isFormValid = await loginForm.value.validate();
   if (!isFormValid) return;
 
@@ -96,7 +102,7 @@ const onSubmit = async () => {
 
 <style scoped>
 .login-container {
-  background: url('@/assets/background.jpg') no-repeat center center;
+  background: url('@/assets/login.jpg') no-repeat center center;
   background-size: cover;
   height: 100vh;
   width: 100vw; 
@@ -115,14 +121,14 @@ const onSubmit = async () => {
 
 .login-title {
   font-size: 24px;
-  color: #333;
+  color: #ffffff;
   font-weight: bold;
   margin-bottom: 5px;
 }
 
 .login-subtitle {
   font-size: 18px;
-  color: #666;
+  color: #edf4ff;
   margin-bottom: 20px;
 }
 

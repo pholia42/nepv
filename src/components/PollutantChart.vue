@@ -9,6 +9,7 @@
 <script>
 import * as echarts from 'echarts';
 import axiosInstance from '@/axios';
+import { debounce } from 'lodash';
 
 export default {
   name: 'PollutantChart',
@@ -21,8 +22,18 @@ export default {
   },
   methods: {
     initChart(ref, chartTitle, barColor, dataKey) {
-      const chart = echarts.init(this.$refs[ref]);
+      const chart = echarts.init(this.$refs[ref], null, { renderer: 'canvas' });
       chart.setOption({
+        toolbox: {
+          feature: {
+            saveAsImage: {
+              show: true,
+              title: '保存为图片',
+              type: 'png',
+              lang: ['点击保存']
+            }
+          }
+        },
         title: {
           text: chartTitle,
           left: 'center',
@@ -58,6 +69,7 @@ export default {
           }
         }]
       });
+      chart.showLoading();
       return chart;
     },
     updateChart(chart, data, dataKey) {
@@ -69,8 +81,9 @@ export default {
           data: data.map(item => item[dataKey])
         }]
       });
+      chart.hideLoading();
     },
-    async fetchData() {
+     async fetchData() {
       const token = localStorage.getItem('token');
       try {
         const response = await axiosInstance.get('/admins/dataGroupByProvince', {
@@ -86,14 +99,14 @@ export default {
         }
       } catch (error) {
         console.error('Request error:', error);
-        this.$message.error('Request error, please try again later');
+        //this.$message.error('Request error, please try again later');
       }
     }
   },
   mounted() {
-    this.pm25Chart = this.initChart('pm25ChartRef', '悬浮颗粒物 (PM2.5) 浓度超标累计', '#5470c6', 'pm250over');
-    this.so2Chart = this.initChart('so2ChartRef', '二氧化硫 (SO2) 浓度超标累计', '#91cc75', 'so2over');
-    this.coChart = this.initChart('coChartRef', '一氧化碳 (CO) 浓度超标累计', '#fac858', 'coover');
+    this.pm25Chart = this.initChart('pm25ChartRef', '悬浮颗粒物 (PM2.5) 浓度超标累计', '#5470c6', 'pm25');
+    this.so2Chart = this.initChart('so2ChartRef', '二氧化硫 (SO2) 浓度超标累计', '#91cc75', 'so2');
+    this.coChart = this.initChart('coChartRef', '一氧化碳 (CO) 浓度超标累计', '#fac858', 'co');
     this.fetchData();
   }
 }

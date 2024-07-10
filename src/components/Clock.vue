@@ -6,22 +6,24 @@
 
 <script>
 export default {
-  name: 'Clock', // 组件的名称
+  name: 'Clock',
   data() {
     return {
-      currentTime: '', // 用于存储当前时间
+      currentTime: '', // 存储当前时间字符串
     };
   },
   mounted() {
-    this.updateTime(); // 组件挂载后立即更新时间
-    this.timer = setInterval(() => this.updateTime(), 1000); // 每秒更新时间
+    this.updateTime(); // 组件挂载后立即调用，确保立即显示时间
+    this.timer = setInterval(this.updateTime, 1000); // 设置定时器，每秒更新时间
   },
   beforeDestroy() {
-    clearInterval(this.timer); // 组件销毁前清除定时器
+    if (this.timer) {
+      clearInterval(this.timer); // 清理定时器，防止内存泄漏
+    }
   },
   methods: {
     updateTime() {
-      this.currentTime = new Date().toLocaleTimeString(); // 更新当前时间
+      this.currentTime = new Date().toLocaleTimeString(); // 使用toLocaleTimeString获取格式化的时间
     }
   }
 };
@@ -29,7 +31,8 @@ export default {
 
 <style scoped>
 .clock {
-  font-size: 24px;
+  font-size: 18px;
   font-family: 'Arial', sans-serif;
+  color: #333;
 }
 </style>

@@ -152,7 +152,7 @@ export default {
         }
       } catch (error) {
         console.error('Request error:', error);
-        this.$message.error('Request error, please try again later');
+        //this.$message.error('Request error, please try again later');
       }
     },
     updateChart(data) {
